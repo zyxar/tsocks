@@ -66,12 +66,21 @@ case "$1" in
       echo "$0: Please see tsocks(1) or read comment at top of $0"
    ;;
 	*)
+        if [ "x$1" = "x--server" ]; then
+            export TSOCKS_SERVER="$2"; shift; shift
+        fi
+        if [ "x$1" = "x--server-port" ]; then
+            export TSOCKS_SERVER_PORT="$2"; shift; shift
+        fi
+        if [ "x$1" = "x--local" ]; then
+            export TSOCKS_LOCAL="$2"; shift; shift
+        fi
 		if [ -z "$LD_PRELOAD" ]
 		then
-			export LD_PRELOAD="/usr/lib/libtsocks.so"
+			export LD_PRELOAD="/lib/libtsocks.so"
 		else
-			echo $LD_PRELOAD | grep -q "/usr/lib/libtsocks\.so" || \
-			export LD_PRELOAD="/usr/lib/libtsocks.so $LD_PRELOAD"
+			echo $LD_PRELOAD | grep -q "/lib/libtsocks\.so" || \
+			export LD_PRELOAD="/lib/libtsocks.so $LD_PRELOAD"
 		fi
 
 		if [ $# = 0 ]

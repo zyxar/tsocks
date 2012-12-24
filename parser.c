@@ -77,6 +77,27 @@ int read_config (char *filename, struct parsedfile *config) {
 		/* Always add the 127.0.0.1/255.0.0.0 subnet to local */
 		handle_local(config, 0, "127.0.0.0/255.0.0.0");
 
+#ifdef ALLOW_ENV_CONFIG
+    /* Add settings from env */
+    {
+        const char *env;
+
+        /* create appropriate lines */
+        if ((env = getenv ("TSOCKS_SERVER")) != NULL) {
+            snprintf (line, MAXLINE, "server = %s", env);
+            handle_line (config, line, 0);
+        }
+        if ((env = getenv ("TSOCKS_SERVER_PORT")) != NULL) {
+            snprintf (line, MAXLINE, "server_port = %s", env);
+            handle_line (config, line, 0);
+        }
+        if ((env = getenv ("TSOCKS_LOCAL")) != NULL) {
+            snprintf (line, MAXLINE, "%s", env);
+            handle_local(config, 0, line);
+        }
+    }
+#endif
+
 		/* Check default server */
 		check_server(&(config->defaultserver));
 		server = (config->paths);
@@ -179,8 +200,10 @@ static int tokenize(char *line, int arrsize, char *tokens[]) {
 		tokenno++;
 		tokens[tokenno] = line;
 		line = line + strcspn(line, " \t");
-		*line = (char) 0;
-		line++;
+		//*line = (char) 0;
+		//line++;
+        if (*line != '\0')
+            *line++ = '\0';
 
 		/* We ignore everything after a # */
 		if (*tokens[tokenno] == '#') { 
@@ -311,11 +334,15 @@ static int handle_server(struct parsedfile *config, int lineno, char *value) {
 	if (currentcontext->address == NULL) 
 		currentcontext->address = strdup(ip);
 	else {
-		if (currentcontext == &(config->defaultserver)) 
-			show_msg(MSGERR, "Only one default SOCKS server "
-				   "may be specified at line %d in "
-				   "configuration file\n", lineno);
-		else 
+		//if (currentcontext == &(config->defaultserver)) 
+		//	show_msg(MSGERR, "Only one default SOCKS server "
+		//		   "may be specified at line %d in "
+		//		   "configuration file\n", lineno);
+		//else 
+        if (currentcontext == &(config->defaultserver)) {
+            free (currentcontext->address);
+            currentcontext->address = strdup(ip);
+        } else
 			show_msg(MSGERR, "Only one SOCKS server may be specified "
 				   "per path on line %d in configuration "
 				   "file. (Path begins on line %d)\n",

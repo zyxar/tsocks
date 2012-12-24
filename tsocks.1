@@ -6,7 +6,7 @@
 transparently allow an application to use a SOCKS proxy
 .SH SYNOPSIS
 .B tsocks
-.RB [application\ [application's\ arguments]]
+.RB [options]\ [application\ [application's\ arguments]]
 .br
 or
 .B tsocks
@@ -19,10 +19,11 @@ or
 is a wrapper between the tsocks library and the application what you
 would like to run socksified.
 .SH OPTIONS
-.IP \fB[application\ \fB[application's\ arguments]]
+.IP \fB[options]\ \fB[application\ \fB[application's\ arguments]]
 run the application as specified with the environment (LD_PRELOAD) set
 such that tsocks(8) will transparently proxy SOCKS connections in 
-that program
+that program. The initial options arguments can override some
+configuration settings: "\-\-server\ server" and "\-\-server\-port\ port"
 .IP \fB[on|off]
 this option adds or removes tsocks(8) from the LD_PRELOAD environment
 variable. When tsocks(8) is in this variable all executed
