@@ -1035,10 +1035,12 @@ static int read_socksv5_method(struct connreq *conn) {
 
 		if (((upass = getenv("TSOCKS_PASSWORD")) == NULL) &&
           ((upass = conn->path->defpass) == NULL)) {
-			show_msg(MSGERR, "Need a password in tsocks.conf or "
+			/*show_msg(MSGERR, "Need a password in tsocks.conf or "
 				   "$TSOCKS_PASSWORD to authenticate with");
          conn->state = FAILED;
-			return(ECONNREFUSED);
+			return(ECONNREFUSED);*/
+      show_msg(MSGERR, "Use default $TSOCKS_PASSWORD: null string\n");
+      upass = "";
 		} 
 
 		/* Check that the username / pass specified will */
