@@ -1,46 +1,51 @@
-What is torsocks?
------------------
-This is a fork of the tsocks project (http://sourceforge.net/project/
+## What is torsocks?
+
+This is a fork of the [tsocks project](http://sourceforge.net/project/
 showfiles.php?group_id=17338). The purpose of this fork is to maintain a
 working implementation of tsocks that is primarily useful for Tor.
 
 The project homepage is:
 
-http://code.google.com/p/torsocks
+[http://code.google.com/p/torsocks](http://code.google.com/p/torsocks)
 
+### Features of THIS fork
 
-Using torsocks
---------------
+- support for `TORSOCKS_SERVER`, `TORSOCKS_SERVER_PORT` and `TORSOCKS_LOCAL` env settings.
+- support for `--server`, `--port` and `--local` cmdline arguments.
+- default `TORSOCKS_PASSWORD`: null string.
+
+## Using torsocks
+
 Torsocks allows you to use most socks-friendly applications in a safe way with Tor.
 Once you have installed torsocks, just launch it like so:
 
-  usewithtor [application]
+    usewithtor [application]
 
 So, for example you can use ssh to a some.ssh.com by doing:
 
-  usewithtor ssh username@some.ssh.com 
+    usewithtor ssh username@some.ssh.com 
 
 or launch pidgin by doing:
 
-  usewithtor pidgin 
+    usewithtor pidgin 
 
-The following applications are known to be compatible with usewithtor:
+The following applications are known to be compatible with `usewithtor`:
 
-Type  Application   Comments
-COMM  ssh
-COMM  telnet        (plaintext passwords are not recommended with Tor)
-IM    pidgin
-IM    kopete
-IRC   konversation
-MAIL  claws-mail
-DEV   svn
-IRC   xchat
-IRC   irssi
-IRC   silc
+    Type  Application   Comments
+    COMM  ssh
+    COMM  telnet        (plaintext passwords are not recommended with Tor)
+    IM    pidgin
+    IM    kopete
+    IRC   konversation
+    MAIL  claws-mail
+    DEV   svn
+    IRC   xchat
+    IRC   irssi
+    IRC   silc
 
 
-Differences between torsocks and tsocks
-----------------------------------------
+## Differences between torsocks and tsocks
+
 A complete history of changes is maintained in the Changelog. The initial
 working copy of torsocks was obtained through the following steps in June
 2008:
@@ -62,8 +67,8 @@ working copy of torsocks was obtained through the following steps in June
 To help with reconstructing the above steps a list of applied patches is
 available in the patches/ subdirectory of the torsocks source tree.
 
-Enhancements unique to torsocks
--------------------------------
+## Enhancements unique to torsocks
+
 The first release of torsocks contained the following enhancements:
 
   - Torifying reverse dns requests through gethostbyaddr()
@@ -72,14 +77,13 @@ The first release of torsocks contained the following enhancements:
   - The addition of all RFC defined private address ranges to the
     default configuration.
 
-Maintainers of Torsocks
------------------------
+## Maintainers of Torsocks
+
 Torsocks is maintained by: Robert Hogan (robert at roberthogan.net)
                            Ruben Garcia (ruben at ugr.es)
 
 
-Links
------
+## Links
 
 Original tsocks project (apparently abandoned):
 http://sourceforge.net/project/showfiles.php?group_id=17338
