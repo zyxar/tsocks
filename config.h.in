@@ -1,88 +1,224 @@
-/* config.h.in.  Generated automatically from configure.in by autoheader.  */
+/* config.h.in.  Generated from configure.in by autoheader.  */
 
-/* Define if you have the ANSI C header files.  */
-#undef STDC_HEADERS
-
-/* Allow tsocks to generate messages to stderr when errors are
-encountered, this is really important and should only be disabled if
-you're REALLY sure. It can also be turned off at run time, see the man
-page for details */
-#undef ALLOW_MSG_OUTPUT
-
-/* Allow TSOCKS_CONF_FILE in environment to specify config file 
-location */
+/* Description */
 #undef ALLOW_ENV_CONFIG
 
-/* Use _GNU_SOURCE to define RTLD_NEXT, mostly for RH7 systems */
-#undef USE_GNU_SOURCE
+/* Argument names */
+#undef CLOSE_ARGNAMES
 
-/* dlopen() the old libc to get connect() instead of RTLD_NEXT, 
-hopefully shouldn't be needed */
-#undef USE_OLD_DLSYM
-
-/* path to library containing connect(), needed if USE_OLD_DLSYM is enabled */
-#undef LIBCONNECT
-
-/* path to libc, needed if USE_OLD_DLSYM is enabled */
-#undef LIBC
-
-/* Configure the system resolver to use TCP queries on startup, this
-allows socksified DNS */
-#undef USE_SOCKS_DNS
-
-/* Prototype and function header for connect function */
-#undef CONNECT_SIGNATURE
-
-/* The type of socket structure pointer to use to call the 
- * real connect */
-#undef CONNECT_SOCKARG
-
-/* Prototype and function header for select function */
-#undef SELECT_SIGNATURE
-
-/* Prototype and function header for poll function */
-#undef POLL_SIGNATURE
-
-/* Prototype and function header for close function */
+/* Description */
 #undef CLOSE_SIGNATURE
 
-/* Work out which function we have for conversion from string IPs to 
-numerical ones */
-#undef HAVE_INET_ADDR
-#undef HAVE_INET_ATON
+/* torsock's configuration directory */
+#undef CONFDIR
 
-/* Allow the use of DNS names in the socks configuration file for socks
-servers. This doesn't work if socksified DNS is enabled for obvious
-reasons, it also introduces overhead, but people seem to want it */
-#define HOSTNAMES 0
+/* Description */
+#undef CONF_FILE
 
-/* We need the gethostbyname() function to do dns lookups in tsocks or 
-in inspectsocks */
+/* Argument names */
+#undef CONNECT_ARGNAMES
+
+/* Description */
+#undef CONNECT_SIGNATURE
+
+/* Description */
+#undef CONNECT_SOCKARG
+
+/* "Define to handle FreeBSD" */
+#undef FREEBSD
+
+/* Argument names */
+#undef GETADDRINFO_ARGNAMES
+
+/* Description */
+#undef GETADDRINFO_SIGNATURE
+
+/* Argument names */
+#undef GETHOSTBYADDR_ARGNAMES
+
+/* Description */
+#undef GETHOSTBYADDR_SIGNATURE
+
+/* Argument names */
+#undef GETHOSTBYNAME_ARGNAMES
+
+/* Description */
+#undef GETHOSTBYNAME_SIGNATURE
+
+/* Argument names */
+#undef GETIPNODEBYNAME_ARGNAMES
+
+/* Description */
+#undef GETIPNODEBYNAME_SIGNATURE
+
+/* Argument names */
+#undef GETPEERNAME_ARGNAMES
+
+/* Description */
+#undef GETPEERNAME_SIGNATURE
+
+/* Define to 1 if you have the <dlfcn.h> header file. */
+#undef HAVE_DLFCN_H
+
+/* Description */
 #undef HAVE_GETHOSTBYNAME
 
-/* Location of configuration file (typically /etc/tsocks.conf) */
-#undef CONF_FILE 
+/* Description */
+#undef HAVE_INET_ADDR
 
-/* Define if you have the strcspn function.  */
+/* Description */
+#undef HAVE_INET_ATON
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the `socket' library (-lsocket). */
+#undef HAVE_LIBSOCKET
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the `mmap' function. */
+#undef HAVE_MMAP
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the `strcasecmp' function. */
+#undef HAVE_STRCASECMP
+
+/* Define to 1 if you have the `strcspn' function. */
 #undef HAVE_STRCSPN
 
-/* Define if you have the strdup function.  */
+/* Define to 1 if you have the `strdup' function. */
 #undef HAVE_STRDUP
 
-/* Define if you have the strerror function.  */
+/* Define to 1 if you have the `strerror' function. */
 #undef HAVE_STRERROR
 
-/* Define if you have the strspn function.  */
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* Define to 1 if you have the `strncasecmp' function. */
+#undef HAVE_STRNCASECMP
+
+/* Define to 1 if you have the `strspn' function. */
 #undef HAVE_STRSPN
 
-/* Define if you have the strtol function.  */
+/* Define to 1 if you have the `strtol' function. */
 #undef HAVE_STRTOL
 
-/* Define if you have the <unistd.h> header file.  */
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* Define if you have the dl library (-ldl).  */
-#undef HAVE_LIBDL
+/* Description */
+#undef LIBC
 
-/* Define if you have the socket library (-lsocket).  */
-#undef HAVE_LIBSOCKET
+/* Description */
+#undef LIBCONNECT
+
+/* Description */
+#undef LIBRESOLV
+
+/* Define to the sub-directory in which libtool stores uninstalled libraries.
+   */
+#undef LT_OBJDIR
+
+/* "Define to handle OpenBSD" */
+#undef OPENBSD
+
+/* Name of package */
+#undef PACKAGE
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* Argument names */
+#undef POLL_ARGNAMES
+
+/* Description */
+#undef POLL_SIGNATURE
+
+/* Argument names */
+#undef RES_QUERYDOMAIN_ARGNAMES
+
+/* Description */
+#undef RES_QUERYDOMAIN_SIGNATURE
+
+/* Argument names */
+#undef RES_QUERY_ARGNAMES
+
+/* Description */
+#undef RES_QUERY_SIGNATURE
+
+/* Argument names */
+#undef RES_SEARCH_ARGNAMES
+
+/* Description */
+#undef RES_SEARCH_SIGNATURE
+
+/* Argument names */
+#undef RES_SEND_ARGNAMES
+
+/* Description */
+#undef RES_SEND_SIGNATURE
+
+/* Argument names */
+#undef SELECT_ARGNAMES
+
+/* Description */
+#undef SELECT_SIGNATURE
+
+/* Argument names */
+#undef SENDMSG_ARGNAMES
+
+/* Description */
+#undef SENDMSG_SIGNATURE
+
+/* Argument names */
+#undef SENDTO_ARGNAMES
+
+/* Description */
+#undef SENDTO_SIGNATURE
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
+
+/* Support the res_query family of calls */
+#undef SUPPORT_RES_API
+
+/* Description */
+#undef USE_GNU_SOURCE
+
+/* Description */
+#undef USE_OLD_DLSYM
+
+/* Version number of package */
+#undef VERSION

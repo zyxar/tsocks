@@ -1,3 +1,393 @@
+Torsocks 1.2
+2011-10-28 Robert Hogan <robert@roberthogan.net>
+
+    o Issue 32: Irssi locks connecting to hidden service
+      
+      During connect() we can end up getting a EWOULDBLOCK/EAGAIN while
+      talking to the SOCKS proxy. This seems to happen when attempting
+      to read a SOCKSV4 connect response from Tor when using the command
+      'torsocks irssi -c 4eiruntyxxbgfv7o.onion' for example.
+      
+      EWOULDBLOCK isn't a valid error during connect(), so if we get it
+      don't return it to the client - use EINPROGRESS instead.
+      
+      Diagnosed and patched by: foobi...@gmail.com
+
+
+    o Issue 27: Fix build system so 'make dist' works
+      
+      "The current build system fails when trying to create a tarball using 'make dist'.
+      There are two problems here:
+      
+      When creating a tarball for distribution with 'make dist', the header files at
+      src/*.h are not included and so the build fails.  These should be listed in
+      libtorsocks_la_SOURCES.
+      
+      Similarly, not having the prefix dist_ for the installation directories in doc/
+      means that these will not be included in the distribution tarball.  Also, there
+      is no need to define custom *manpagedirs as the build system is man page aware."
+      
+      Patch by Anthony Basile <blueness@gentoo.org>
+
+    o Issue 29: tordns no worky? - Part 2
+      
+      This was a regression caused by splitting tsocks.c into socks.c and
+      torsocks.c. The 'requests' and 'pool' variables were declared static in the socks.h
+      header file with the result that the values were no longer shared between
+      source files.
+      
+      Patch from foobi..@gmail.com
+
+    o Issue 30: libtorsocks.so sanity check
+      
+      "Currently if libtorsocks.so doesn't exist, torsocks will happily proceed without it,
+      and not use tor."
+      
+      Check for libtorsocks.so and bail out if it isn't found.
+
+    o Issue 25: Building within a sandbox environment fails
+      
+      When building in a sandbox environment, the build system's substitution variable,
+      @LD_PRELOAD@ is confused with the environment variable LD_PRELOAD and build fails
+      with an error that it cannot load ld.so.
+      
+      By Renaming @LD_PRELOAD@ to @LDPRELOAD@, we disambiguate the two.
+      
+      Patch by: Athony Basile (blueness@gentoo.org)
+
+    o Issue 26: common.h is a local header and should be included using #include "common.h"
+      
+      Patch by: Anthony G Basile (blueness@gentoo.org)
+
+    o Clean up the build:
+        Remove some cruft from Makefile.am
+        Use $TORSOCKSLDFLAGS for libtorsocks and $TESTLDFLAGS
+          for test/test_torsocks.
+        Only run config.status once at configure time
+        Add missing doc/Makefile.am
+        Move patches directory to docs and update DEBUG readme
+        Move man pages and configuration files to docs folder
+        Clean up and comment configure.in
+        Fix compile warning on some versions of gcc. Seen on 
+          i686-apple-darwin10-gcc-4.2.1 (GCC) 4.2.1 (Apple Inc. build 5659)
+        Fix build on systems that export res_query a strange way
+            Reported by starslights.
+        Replace Makefile.cvs with autogen.sh
+        Fix copyright notice
+        Fix -lresolv on linux builds again
+        Use @libdir@ instead of @prefix@ in src/Makefile.am
+          Patch from Hicham Haouari.
+          Fixes build for Fedora 64-bit.
+
+    o Clean up the source tree:
+        Add documentation to 'make dist'
+        Fix funny malloc statement
+        Split SOCKS functions into separate file
+        Tidy up the file copyrights
+        More renaming of tsocks to torsocks
+        More whitespace cleanups
+        Whitespace cleanup in parser.h
+        Tidy up copyright in parser.h
+        Rename functions from tsocks* to torsocks*
+        Whitespace cleanups in common.c
+        Rename tsocks.h to torsocks.h
+        Rename tsocks.c to torsocks.c
+
+    o Remove the supplementary utilities inspectsocks, saveme and validateconf
+      as they've been disabled for some time now. They can be restored by popular demand if
+      necessary.
+
+    o Remove check that init() has been called
+      I think the pthread_mutex takes care of this problem now.
+
+    o Fix segfault    
+      Occurred when tor not running, torsocks run in debug/test mode, and
+      gethostbyaddr() fails.
+
+    o Add a rudimentary test suite
+        Make tests compile and run on OSX
+        Compile and run tests on FreeBSD
+        Make tests compile and run on OpenBSD
+
+    o Compile and (apparently) work on OpenBSD
+
+    o Remove socksdns, tordns and hostnames configure options.
+      
+      These options are defunct:
+      1. socksdns (force dns lookups to use tcp)
+          torsocks does this by default, no reason to make it optional.
+      2. tordns (force dns lookups through tor)
+          torsocks does this by default, option has been a no-op for a
+          long time.
+      3. hostnames (resolve name of socks server if required)
+          potentially useful, but not really a good idea for tor.
+
+
+    o Fix 'symbol res_send() was not found in any shared library'
+      
+      Solution found by Nicolas Pouillard (nicolas.pouillard@gmail.com).
+      However I am still not clear why this is necessary for just this
+      symbol on Linux.
+      
+      To test that it works:
+      cd test/
+      gcc -fPIC  -g -O2 -Wall -I. -o resinit resinit.c -lc -lresolv
+      cd ..
+      export TORSOCKS_DEBUG=2
+      torsocks test/resinit
+      Expected result:
+      12:45:33 libtorsocks(21307): Got res_send request
+      
+      http://code.google.com/p/torsocks/issues/detail?id=3
+
+    o Rename and clean up whitespace in the signature expansion header
+
+    o Refuse connections to local network addresses.
+      If a DNS request is made to a DNS server on a local network over
+      TCP we need to reject it. So for now, reject all attempts to connect
+      to servers on the local network using torsocks. If torsocks is used
+      with programs that expect to use local network services - this will
+      probably break them. I'm not aware of any.
+
+    o Prevent execution of suid/sgid programs by torsocks
+      We already do this in usewithtor. Closes off
+      http://code.google.com/p/torsocks/issues/detail?id=5
+
+Torsocks 1.1
+2010-12-12 Robert Hogan <robert@roberthogan.net>
+    o Handle wildcard addresses in getaddrinfo calls. Reported by Mike Perry.
+
+    o Move the address inspection to the end of sendmsg() and sendto()
+      so that we can exit early if the socket is not SOCK_STREAM (i.e.
+      tcp).
+
+    o Exit if Tor DNS is disabled.
+      Exit with an error code if Tor DNS is disabled in the configuration
+      or if we cannot reserve the deadpool address space for .onion
+      addresses.
+
+    o Always print error messages.
+
+    o Allow error logging by default.
+
+    o Style cleanup:
+        No brackets for single-statement conditionals
+        Whitespace fixes in tsocks.c
+        Remove torsocks.kdevelop
+        Remove non-free RFC and replace with link.
+    o Remove USE_TOR_DNS compile guard
+      This is a leftover from the tsocks days. We always want this option
+      enabled.
+
+    o Only enable debug output for debug builds
+      Debug output was printing on release builds and getting suppressed
+      on debug builds - which is the wrong way round!
+
+    o Make a global variable less generic
+      Exporting a global variable called 'progname' is not a good
+      idea if you are a library. Exporting global variables at all
+      is probably a bad idea.
+      For now, make the name less generic - it was causing crashes
+      when torsocks was used with dig.
+      Part of the fix for:
+          http://code.google.com/p/torsocks/issues/detail?id=15
+
+    o Use socket rather than address to determine connection type
+      In sendmsg() and sendto() we were inspecting the sock_addr_t
+      structure to determine if the connection was Internet or not.
+      Since msg->msg_name is an optional value in sendmsg() and
+      sendto() this could result in crashes because we weren't ensuring
+      it was non-null.
+      Since it's optional we should have been inspecting the SO_DOMAIN
+      of the connection's socket anyway - it will always be there.
+      Part of the fix for:
+      http://code.google.com/p/torsocks/issues/detail?id=15
+
+    o Major refactor of symbol hooking
+      Patch by alex@ohmantics.net
+      Make torsocks fully compatible with Snow Leopard OSX.
+      Slim down the symbol hooking code considerably.
+      Alex's notes:
+      "http://developer.apple.com/mac/library/releasenotes/Darwin/SymbolVariantsRelNotes/index.
+      don't have the $UNIX2003 variants. For working 10.6 support, we'll need to
+      conditionalize the UNIX2003 variants off when compiling for 64-bit."
+
+    o Improve compile-time detection of the res* family of system calls
+      Some platforms need to explicitly include resolv.h so cater for
+      that.
+      Thanks to SwissTorExit for reporting and debugging assistance.
+
+    o Do our best to ensure tsocks_init is called only once.
+
+    o Build fix for BSD.
+      Support presence of res_query in libc rather than libresolve.
+
+Torsocks 1.0-epsilon
+2009-11-01 Robert Hogan <robert@roberthogan.net>
+
+    o Manpage syntax fixes from Patrick Matthäi <pmatthaei@debian.org>
+
+    o Clarify use of the configuration file.
+
+      Amend the default behaviour to work as summarized below and updated the
+      manual pages to make the default behaviour obvious to users.
+
+      "By default, torsocks will assume that it should connect to the SOCKS proxy
+      running at 127.0.0.1 on port 9050. This is the default address and port for
+      Tor's socks server on most installations.
+
+      In order to use a configuration file, you must set the environment variable
+      TORSOCKS_CONF_FILE with the location of the file.
+
+      If TORSOCKS_CONF_FILE is not set, torsocks will attempt to read the configuration
+      file at @CONFDIR@/torsocks.conf. If that file cannot be read, torsocks will
+      use sensible defaults for most Tor installations, i.e. it will assume that
+      you want to use a SOCKS proxy running at 127.0.0.1 (localhost) on port 9050."
+
+    o Fix compilation in 64-bit OSX.
+
+    o Mac OSX compatibility in tsocks.c
+      Original Patch from Alex Rosenberg <alex@ohmantics.com>
+
+        1. Hook OSX-specific syscalls
+        -----------------------------
+          Mac OXS has a number of variants of each syscall. This patch adds
+          hooks for the following OSX variants:
+
+            select() : select_unix2003()
+                      select_nocancel()
+                      select_darwinextsn_nocancel()
+                      select_darwinextsn()
+
+            poll(), connect(), sendmsg(), sendto(), close(): *_unix2003(),
+                                                            *_nocancel()
+            getpeername(): *_unix2003()
+
+        2. Add Hooking Macros
+        --------------------
+          Move the symbol loading and checking out to macros of the form
+          [syscall]_PATCH:
+
+            PATCH_SELECT, PATCH_CONNECT, PATCH_CLOSE, PATCH_POLL,
+            PATCH_GETPEERNAME, PATCH_SENDTO, PATCH_SENDMSG
+
+          Rename the syshooks to functions of the form *_guts().
+
+        3. Miscellaneous
+        ----------------
+          Add NONSTD_SOURCE define for Mac OSX.Defining _NONSTD_SOURCE
+          causes library and kernel calls to behave as closely
+          to Mac OS X 10.3's library and kernel calls as possible.
+
+          Use socklen_t instead of int.
+
+          Move get_environment() and get_config() to tsocks_init(),
+          rather than calling adhoc in the syscalls.
+
+          Differentiate between EISCONN and EINPROGRESS errors in
+          connect().
+
+        Original Patch from Alex Rosenberg <alex@ohmantics.com>
+        http://code.google.com/p/torsocks/issues/detail?id=2#c11
+
+    o Patch torsocks.in for Mac OSX
+        Patch from alexr@ohmantics.com
+        Mac OSX uses the DYLD_INSERT_LIBRARIES and DYLD_FORCE_FLAT_NAMESPACE
+        environment variables to enable/perform syscall-hooking. Also, on
+        Mac OSX dynamically linked libraries use the '*.dylib' extension
+        rather than '*.so'. Alex's patches for torsocks.in and configure.in
+        ensure that we use the appropriate values for Max OSX. Ideally, we
+        wouldn't export DYLD_FORCE_FLAT_NAMESPACE on non-Mac OSX platforms
+        but it is harmless to do so. We'll leave that for another day.
+        The patch also fixes up the sed reg-exp to interpret the 'echo
+        DYLD_INSERT_LIBRARIES' output as well as that from LD_PRELOAD.
+
+    o Whitespace cleanup in parser.c
+
+    o Add linker checks for Mac OSX. Patch from alexr@ohmantics.com
+
+    o Move MAP_ANONYMOUS to common.h
+
+    o LD_PRELOAD is ignored for binaries where setuid/gid is used. As used,
+      torsocks doesn't detect this, which means that it provides a false sense
+      of security when running these types of executables.
+      Added logic that detects setuid/setgid programs and fails early with an
+      error message.
+      Further reorganized the file to simplify flow and improve command line
+      argument handling.
+      Patch by Marcus Griep <marcus@griep.us>
+
+    o remove aclocal.m4
+
+    o BSD build patch from grarpamp. See http://code.google.com/p/torsocks/issues/detail?id=4.
+
+    o Replace TSOCKS_* environment variables with TORSOCKS_* equivalents as per man page.
+
+    o Remove superfluous include.
+
+    o Fix compilcation on Mac OSX. See http://code.google.com/p/torsocks/issues/detail?id=2
+
+    o Expand reject message for UDP and ICMP requests
+
+Torsocks 1.0-delta
+2009-02-XX Robert Hogan <robert@roberthogan.net>
+    o Fix segfault when address supplied for getaddrinfo is null. Reported by Mike Perry.
+    o Handle wildcard addresses in getaddrinfo calls. Reported by Mike Perry.
+
+Torsocks 1.0-gamma
+2009-01-22 Robert Hogan <robert@roberthogan.net>
+    o Fix issue with poll(). We were looking for READ events rather than
+      POLLIN events. Reported by Mike Perry.
+    o Handle premature call of symbols before pre-loaded.
+      Reported by Mike Perry using 'torsocks svn' on Fedora 10.
+    o Catch res_query, res_search, res_querydomain, and res_send and
+      try to ensure DNS requests using these API calls are transmitted
+      via TCP rather than UDP.
+    o Reject even locally-destined UDP messages, since these may be
+      DNS requests to a DNS proxy on an DSL router.
+    o Ensure torsocks.conf is in the expected place.
+    o Match tor's list of local subnets both in torsocks.conf and by
+      default.
+    o Ignore non-INET streams. Reject INET UDP streams. We were previously
+      rejecting anything that wasn't an INET stream, this prevented connect
+      calls of the PF_FILE type by applications such as xchat. Is there a
+      security issue here - applications bypassing TCP to leak user info?
+
+Torsocks 1.0-beta
+2008-10-26 Robert Hogan <robert@roberthogan.net>
+  Housekeeping changes:
+    o replace torify command with usewithtor command.
+
+Torsocks 1.0-alpha
+2008-07-06 Robert Hogan <robert@roberthogan.net>
+  Functionality Changes:
+    o tsocks.c: UDP blocking in sendto() and sendmsg().
+    o tsocks.c: Reject UDP requests to non-local addresses on connect()
+    o parser.c: Add more private address ranges.
+    o tsocks.c: realgetipnodebyname was using RTLD_NEXT instead of lib.
+    o Add support for gethostbyaddr().
+    o parser.c: Fix compilation warnings. Use defaults sensible for Tor.
+    o Generate the torsocks and torify scripts from torsocks.in and torify.in
+      at compilation time.
+  Housekeeping changes:
+    o dead_pool.c/h, inspectsocks.c, common.c, tsocks.c, validateconf.c:
+      Fix compilation warnings.
+    o Add 'patches' directory and store a copy of all prior changes to tsocks.
+    o Add create-release.sh
+    o Port to automake build system.
+    o Update copyright notices.
+
+
+
+******************************************************************************
+-------------------------
+Original tsocks Changelog
+-------------------------
+
+version 1.80tordns - 2005.10.4 bls@totalinfosecurity.com
+   Intercept gethostbyname() and friends, added --tordns
+   option for better name resolution with Tor.
+
 version 1.80Beta5 - 2002.?.?? delius@progsoc.uts.edu.au
    Intercept close() to fix problems with tsocks and 
       kmail 
