@@ -96,7 +96,7 @@ case "$1" in
     fi
     # FIXME: This env variable is only meaningful on Mac OSX, so it would be better
     #        not to set it at all on other platforms.
-    if [ $HOST == "Darwin" ];then
+    if [ $HOST = "Darwin" ];then
       export DYLD_FORCE_FLAT_NAMESPACE=1
     fi
   ;;
@@ -110,7 +110,7 @@ case "$1" in
         unset @LDPRELOAD@
         # FIXME: This env variable is only meaningful on Mac OSX, so it would be better
         #        not to set it at all on other platforms.
-        if [ $HOST == "Darwin" ];then
+        if [ $HOST = "Darwin" ];then
           unset DYLD_FORCE_FLAT_NAMESPACE=1
         fi
     fi
@@ -138,7 +138,7 @@ case "$1" in
       echo $@LDPRELOAD@ | grep -q "${SHLIB}" || \
       export @LDPRELOAD@="${SHLIB} $@LDPRELOAD@"
     fi
-    if [ $HOST == "Darwin" ];then
+    if [ $HOST = "Darwin" ];then
       export DYLD_FORCE_FLAT_NAMESPACE=1
     fi
 

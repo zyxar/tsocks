@@ -259,8 +259,10 @@ static int tokenize(char *line, int arrsize, char *tokens[]) {
         tokenno++;
         tokens[tokenno] = line;
         line = line + strcspn(line, " \t");
-        *line = (char) 0;
-        line++;
+        // *line = (char) 0;
+        // line++;
+        if (*line != '\0')
+            *line++ = '\0';
 
         /* We ignore everything after a # */
         if (*tokens[tokenno] == '#') {
