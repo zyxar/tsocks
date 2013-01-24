@@ -122,6 +122,15 @@ case "$1" in
       echo "$0: Please see torsocks(1) or read comment at top of $0"
    ;;
   *)
+    if [ "x$1" = "x--server" ]; then
+      export TORSOCKS_SERVER="$2"; shift; shift
+    fi
+    if [ "x$1" = "x--port" ]; then
+      export TORSOCKS_SERVER_PORT="$2"; shift; shift
+    fi
+    if [ "x$1" = "x--local" ]; then
+      export TORSOCKS_LOCAL="$2"; shift; shift
+    fi
     if [ -z "$@LDPRELOAD@" ]
     then
       export @LDPRELOAD@="${SHLIB}"
