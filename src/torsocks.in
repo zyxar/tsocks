@@ -77,6 +77,7 @@ LIBDIR="@prefix@/lib/torsocks"
 LIB_NAME="libtorsocks"
 SHLIB_EXT="@SHLIB_EXT@"
 SHLIB="${LIBDIR}/${LIB_NAME}.${SHLIB_EXT}"
+HOST="`uname -s`"
 
 # Ensure libtorsocks exists,
 if [ ! -f $SHLIB ]; then
@@ -95,7 +96,9 @@ case "$1" in
     fi
     # FIXME: This env variable is only meaningful on Mac OSX, so it would be better
     #        not to set it at all on other platforms.
-    export DYLD_FORCE_FLAT_NAMESPACE=1
+    if [ $HOST == "Darwin" ];then
+      export DYLD_FORCE_FLAT_NAMESPACE=1
+    fi
   ;;
   off)
     #replace '/' with '\/' in @prefix@
@@ -107,7 +110,9 @@ case "$1" in
         unset @LDPRELOAD@
         # FIXME: This env variable is only meaningful on Mac OSX, so it would be better
         #        not to set it at all on other platforms.
-        unset DYLD_FORCE_FLAT_NAMESPACE=1
+        if [ $HOST == "Darwin" ];then
+          unset DYLD_FORCE_FLAT_NAMESPACE=1
+        fi
     fi
   ;;
   show|sh)
@@ -124,7 +129,9 @@ case "$1" in
       echo $@LDPRELOAD@ | grep -q "${SHLIB}" || \
       export @LDPRELOAD@="${SHLIB} $@LDPRELOAD@"
     fi
-    export DYLD_FORCE_FLAT_NAMESPACE=1
+    if [ $HOST == "Darwin" ];then
+      export DYLD_FORCE_FLAT_NAMESPACE=1
+    fi
 
     if [ $# = 0 ]
     then
