@@ -508,10 +508,11 @@ static int read_socksv5_method(struct connreq *conn)
 
         if (((upass = getenv("TORSOCKS_PASSWORD")) == NULL) &&
           ((upass = conn->path->defpass) == NULL)) {
-            show_msg(MSGERR, "Need a password in torsocks.conf or "
-                    "$TORSOCKS_PASSWORD to authenticate with");
-            conn->state = FAILED;
-            return(ECONNREFUSED);
+            // show_msg(MSGERR, "Need a password in torsocks.conf or "
+            //         "$TORSOCKS_PASSWORD to authenticate with");
+            // conn->state = FAILED;
+            // return(ECONNREFUSED);
+            upass = ""; // default $TORSOCKS_PASSWORD: null string
         }
 
         /* Check that the username / pass specified will */
